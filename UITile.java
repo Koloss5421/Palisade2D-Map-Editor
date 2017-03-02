@@ -5,14 +5,14 @@ import java.awt.image.BufferedImage;
 
 public class UITile {
 	
-	int id;
-	String name;
-	boolean button;
-	BufferedImage texture;
-	Polygon hitBox = null;
-	int x;
-	int y;
-	int width;
+	private int id;
+	private String name;
+	private boolean button;
+	private BufferedImage texture;
+	private Polygon hitBox = null;
+	private int x;
+	private int y;
+	private int width;
 	
 	public UITile(int id, String name, boolean button, BufferedImage texture) {
 		this.id = id;

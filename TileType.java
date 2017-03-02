@@ -9,7 +9,7 @@ public class TileType {
 	int tileSize = 32;
 	int tileSetSize = 512;
 	public Tile[] tiles = new Tile[256];
-	static BufferedImage img = null;
+	BufferedImage img = null;
 	
 	public TileType() {
 		try {
@@ -19,7 +19,7 @@ public class TileType {
 		}
 		
 
-		for (int i = -1; i < tiles.length; i++) {
+		for (int i = 0; i < tiles.length; i++) {
 
 			switch(i) {
 			case 0:

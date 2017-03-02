@@ -24,13 +24,11 @@ public class TileMap {
 
 		// In Case map file doesn't exist - crash with error.
 		try {
-		@SuppressWarnings("resource")
 		Scanner getFile = new Scanner(getClass().getResourceAsStream("/resources/" + mapName + ".map"));
 		
 		// both will be used to initialize the tileMap array
 		int countY = 0;
 		int countX = 0;
-		
 		// count lines for tileMap Y Max and count max number of x tiles (I know some of this will end up being done twice BUT)
 		// I wanted the level#.map files to be dynamic in size;
 		while(getFile.hasNextLine()) {
@@ -41,7 +39,7 @@ public class TileMap {
 			}
 			countY++;
 		}
-		getFile.close();
+		//getFile.close();
 		getFile = new Scanner(new FileInputStream("resources/" + mapName + ".map"));
 		//Set tileMap size to countY and countX
 		tileMap = new int[countY][countX];
@@ -57,7 +55,7 @@ public class TileMap {
 
 			}
 		
-		
+		//getFile.close();
 		} catch(Exception e) {
 			new Exception(e);
 		}
@@ -75,21 +73,29 @@ public class TileMap {
 				
 				g2.drawImage(tileSet.getTextureOf(tileMap[y][x]), (x - xOffset) * tileSize, (y - yOffset) * tileSize, tileSize, tileSize, null);
 				// DRAW TILEMAT BOUNDING BOX
-				g2.setColor(Color.GREEN);
-				g2.setStroke(new BasicStroke(2));
-				g2.drawLine((0 - xOffset) * tileSize, (0 - yOffset) * tileSize, (0 - xOffset) * tileSize, (tileMap.length - yOffset) * tileSize);
-				g2.drawLine((0 - xOffset) * tileSize, (0 - yOffset) * tileSize, (tileMap[y].length - xOffset) * tileSize, (0 - yOffset) * tileSize);
-				g2.drawLine((tileMap[y].length - xOffset) * tileSize, (0 - yOffset) * tileSize, (tileMap[y].length - xOffset) * tileSize, (tileMap.length - yOffset) * tileSize);
-				g2.drawLine((tileMap[y].length - xOffset) * tileSize, (tileMap.length - yOffset) * tileSize, (0 - xOffset) * tileSize, (tileMap.length - yOffset) * tileSize);
-				if (tileSet.getTile(tileMap[y][x]).collides() && UI.getShowHitBoxes()) {
-					g2.setColor(Color.red);
-					g2.setStroke(new BasicStroke(1));
-					g2.drawPolygon(tileSet.getHitBoxOf(tileMap[y][x], (x - xOffset), (y - yOffset), tileSize));
+				drawBoundingBox(g2, tileSize, yOffset, xOffset, x, y);
+				if (Main.ui.getShowHitBoxes()) {
+					drawCollision(g2, x, y, tileSize, xOffset, yOffset);
 				}
 			}
 		}
 		
 		
+	}
+	private void drawBoundingBox(Graphics2D g2, int tileSize, int yOffset, int xOffset, int x, int y) {
+		g2.setColor(Color.GREEN);
+		g2.setStroke(new BasicStroke(2));
+		g2.drawLine((0 - xOffset) * tileSize, (0 - yOffset) * tileSize, (0 - xOffset) * tileSize, (tileMap.length - yOffset) * tileSize);
+		g2.drawLine((0 - xOffset) * tileSize, (0 - yOffset) * tileSize, (tileMap[y].length - xOffset) * tileSize, (0 - yOffset) * tileSize);
+		g2.drawLine((tileMap[y].length - xOffset) * tileSize, (0 - yOffset) * tileSize, (tileMap[y].length - xOffset) * tileSize, (tileMap.length - yOffset) * tileSize);
+		g2.drawLine((tileMap[y].length - xOffset) * tileSize, (tileMap.length - yOffset) * tileSize, (0 - xOffset) * tileSize, (tileMap.length - yOffset) * tileSize);
+	}
+	private void drawCollision(Graphics2D g2, int x, int y, int tileSize, int xOffset, int yOffset) {
+		if (tileSet.getTile(tileMap[y][x]).collides() && Main.ui.getShowHitBoxes()) {
+			g2.setColor(Color.red);
+			g2.setStroke(new BasicStroke(1));
+			g2.drawPolygon(tileSet.getHitBoxOf(tileMap[y][x], (x - xOffset), (y - yOffset), tileSize));
+		}
 	}
 	public void setTile(int x, int y, int id) {
 		tileMap[y][x] = id;

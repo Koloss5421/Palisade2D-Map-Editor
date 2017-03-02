@@ -8,22 +8,95 @@ import java.awt.Point;
 import java.awt.Polygon;
 
 public class UI {
-	static int windowWidth = Main.windowWidth;
-	static int windowHeight = Main.windowHeight;
-	static int tileSize = Main.tileSize;
-	static UITileSet uiTileSet = Main.uiTileSet;
+	int windowWidth = Main.windowWidth;
+	int windowHeight = Main.windowHeight;
+	int tileSize = Main.tileSize;
+	UITileSet uiTileSet = Main.uiTileSet;
 	static boolean drawGrid = false;
-	static boolean showHitBoxes = false;
-	static int fileButtonState = 0;
+	static boolean fileManOpen = false;
+	boolean showHitBoxes = false;
+	int fileButtonState = 0;
+	int helpButtonState = 2;
+	int newButtonState = 4;
+	int buttonCount = 0;
+	int[] buttons;
 	
-	public static void drawHud(Graphics2D g2) {
-		TileType tileSet = Main.tileSet;
-		int selector = Main.selector;
-		
-		int maxX = windowWidth / tileSize;
-		int maxY = windowHeight / tileSize;
+
+	
+	
+	public void drawHud(Graphics2D g2) {
 		
 		if(drawGrid) {
+			drawGrid(g2);
+		}
+		
+		drawFileButton(g2);// Draw 'File' Button
+		drawHelpButton(g2);
+		if(fileManOpen) {
+			drawNewButton(g2);
+			defineButtons();
+		}
+		defineButtons();
+		drawSelector(g2);// Draw Selector
+
+	}
+	// DRAWING FUNCTIONS
+	private void drawFileButton(Graphics2D g2) {
+		int x = 5;
+		int y = 5;
+		int width = (int)(tileSize * 1.5); 
+		defineButtonHitbox(x,y,width, 0, 1);
+		g2.drawImage(uiTileSet.getTextureOf(fileButtonState), x, y, width, width, null); // draw the button
+		buttonCount += 2;
+	}
+	private void drawHelpButton(Graphics2D g2) {
+		int x = 690;
+		int y = 160;
+		int width = (int)(tileSize * 1.5); 
+		defineButtonHitbox(x,y,width, 2, 3);
+		g2.drawImage(uiTileSet.getTextureOf(helpButtonState), x, y, width, width, null); // draw the button
+		buttonCount += 2;
+	}
+	private void drawNewButton(Graphics2D g2) {
+		int x = 400;
+		int y = 400;
+		int width = (int)(tileSize * 1.5); 
+		defineButtonHitbox(x,y,width, 2, 3);
+		g2.drawImage(uiTileSet.getTextureOf(newButtonState), x, y, width, width, null); // draw the button
+		buttonCount += 2;
+	}
+	private void defineButtons() {
+		buttons = new int[buttonCount];
+		for(int i = 0; i < buttons.length; i++) {
+			buttons[i] = i;
+		}
+		buttonCount = 0;
+	}
+	private void drawSelector(Graphics2D g2) {
+		TileType tileSet = Main.tileSet;
+		int selector = Main.selector;
+		int width = 120;
+		int fontHeight = 20;
+		int selectX = windowWidth - (width + 15);
+		int selectY = 0 + 10;
+		int offset = 3;
+		
+		g2.setColor(Color.DARK_GRAY);
+		g2.fillRect(selectX, selectY, width, width + fontHeight + 5); // Draws Background Rectangle
+		// Draws Currently selected texture for preview
+		g2.drawImage(tileSet.getTextureOf(selector), selectX + offset, selectY + offset, width - (offset * 2), width - (offset * 2), null);
+		// Draws currently selected Name and ID
+		g2.setColor(Color.WHITE);
+		g2.setFont(new Font("Consolas", Font.PLAIN, fontHeight));
+		String tileName = selector + ":" + tileSet.getTileName(selector);
+		int nameWidth = g2.getFontMetrics().stringWidth(tileName);
+		g2.drawString(tileName, (selectX + width / 2) - (nameWidth / 2), selectY + width + fontHeight);
+
+	}
+	private void drawGrid(Graphics2D g2) {
+		int maxX = windowWidth / tileSize;
+		int maxY = windowHeight / tileSize;
+		if (Main.mapLoaded) {
 			for (int y = 0; y < maxY; y++) {
 				for (int x = 0; x < maxX; x++) {
 					g2.setColor(Color.BLUE);
@@ -33,64 +106,66 @@ public class UI {
 				}
 			}
 		}
-		// Draw 'File' Button
-		int x = 5;
-		int y = 5;
-		int width = (int)(tileSize * 1.5); 
-		defineFileHitbox(x,y,width);
-		g2.drawImage(uiTileSet.getTextureOf(fileButtonState), x, y, width, width, null); // draw the button
-		// Draw Selector
-		g2.setColor(Color.DARK_GRAY);
-		width = 120;
-		int fontHeight = 20;
-		int selectX = windowWidth - (width + 15);
-		int selectY = 0 + 10;
-		g2.fillRect(selectX, selectY, width, width + fontHeight + 5);
-		
-		int offset = 3;
-		g2.drawImage(tileSet.getTextureOf(selector), selectX + offset, selectY + offset, width - (offset * 2), width - (offset * 2), null);
-		//g2.setColor(Color.RED);
-		g2.drawRect(selectX + offset, selectY + offset, width - (offset * 2), width - (offset * 2));
-		
-		g2.setColor(Color.WHITE);
-		g2.setFont(new Font("Consolas", Font.PLAIN, fontHeight));
-		String tileName = selector + ":" + tileSet.getTileName(selector);
-		int nameWidth = g2.getFontMetrics().stringWidth(tileName);
-		g2.drawString(tileName, (selectX + width / 2) - (nameWidth / 2), selectY + width + fontHeight);
 	}
-	public static void defineFileHitbox(int x, int y, int width) {
-		uiTileSet.setTileX(0, x); // set the X
-		uiTileSet.setTileY(0, y); // set the Y
-		uiTileSet.setTileX(1, x); // set the X
-		uiTileSet.setTileY(1, y); // set the Y
+	public void defineButtonHitbox(int x, int y, int width, int tileUp, int tileDown) {
+		uiTileSet.setTileX(tileUp, x); // set the X
+		uiTileSet.setTileY(tileUp, y); // set the Y
+		uiTileSet.setTileX(tileDown, x); // set the X
+		uiTileSet.setTileY(tileDown, y); // set the Y
 		int[] xPoly = { x, x + width , x + width, x}; 
 		int[] yPoly = { y, y, y + width - 32, y + width - 32};
 		Polygon poly = new Polygon(xPoly, yPoly, 4);
-		uiTileSet.setHitBox(0, poly);
-		uiTileSet.setHitBox(1, poly);
+		uiTileSet.setHitBox(tileUp, poly);
+		uiTileSet.setHitBox(tileDown, poly);
+		//buttons[tileUp] = tileUp;
+		//buttons[tileDown] = tileDown;
 	}
-	public static boolean getDrawGrid() {
+	public boolean getDrawGrid() {
 		return drawGrid;
 	}
-	public static void setDrawGrid(boolean bool) {
+	public void setDrawGrid(boolean bool) {
 		drawGrid = bool;
 	}
-	public static boolean getShowHitBoxes() {
+	public void setFileManOpen(boolean bool) {
+		fileManOpen = bool;
+	}
+	public boolean getShowHitBoxes() {
 		return showHitBoxes;
 	}
-	public static void setShowHitBoxes(boolean bool) {
-		showHitBoxes = bool;
+	public void setShowHitBoxes(boolean bool) {
+		this.showHitBoxes = bool;
 	}
-	public static void setFileButtonState(int state) {
-		fileButtonState = state;
+	public void setButtonState(int button, int change) {
+		if(button == fileButtonState) {
+			fileButtonState += change;
+		}
+		if(button == helpButtonState) {
+			helpButtonState += change;
+		}
 	}
-	public static boolean checkFileHover(Point point) {
+	public int checkButtonHover(Point point) {
+		if(buttons != null) {
+			//System.out.println("BUTTONS LENGTH=" + buttons.length);
+			for(int i = 0; i < buttons.length; i++) {
+					Polygon hitBox = uiTileSet.getHitBox(i);
+					if (hitBox.contains(point)) {
+						return i;
+					}
+				
+			}
+		}
+		else 
+		{
+			defineButtons();
+		}
+		return -1;
+		/*
 		Polygon hitBox = uiTileSet.getHitBox(fileButtonState);
 		if( hitBox.contains(point) ) {
 			return true;
 		}
 		else {
 			return false;
-		}
+		}*/
 	}
 }

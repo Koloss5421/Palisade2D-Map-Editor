@@ -18,24 +18,31 @@ public class UITileSet {
 			img = ImageIO.read(getClass().getResource("resources/hudTiles.png"));
 			tileSetSize = img.getWidth();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
-		
 
-		for (int i = -1; i < tiles.length; i++) {
-
+		for (int i = 0; i < tiles.length; i++) {
+			
 			switch(i) {
 			case 0:
-				this.tiles[i] = new UITile(i, "FileUp", false, getImg(i));
+				this.tiles[i] = new UITile(i, "FileUp", true, getImg(i));
 				break;
 			case 1:
 				this.tiles[i] = new UITile(i, "FileDown", true, getImg(i));
 				break;
+			case 2:
+				this.tiles[i] = new UITile(i, "HelpUp", true, getImg(i));
+				break;
+			case 3:
+				this.tiles[i] = new UITile(i, "HelpDown", true, getImg(i));
+				break;
+			case 4:
+				this.tiles[i] = new UITile(i, "NewUp", true, getImg(i));
+				break;
+			case 5:
+				this.tiles[i] = new UITile(i, "NewDown", true, getImg(i));
+				break;
 			}
-			
 		}
 	}
 
@@ -56,6 +63,9 @@ public class UITileSet {
 		subImage = img.getSubimage(x, y, tileSize, tileSize);
 		return subImage;
 	}
+		
+		
+	
 	public BufferedImage getTextureOf(int id) {
 
 		return tiles[id].getTexture();
@@ -81,19 +91,20 @@ public class UITileSet {
 	}
 	public void setHitBox(int id, Polygon poly) {
 
-		tiles[id].setHitBox(poly);
+		this.tiles[id].setHitBox(poly);
 	}
 	public void setTileX(int id, int x) {
-		tiles[id].setX(x);
+		this.tiles[id].setX(x);
 	}
 	public void setTileY(int id, int y) {
-		tiles[id].setY(y);
+		this.tiles[id].setY(y);
 	}
 	public void setTileWidth(int id, int width) {
-		tiles[id].setWidth(width);
+		this.tiles[id].setWidth(width);
 	}
 	public Polygon getHitBox(int id) {
-		return tiles[id].getHitbox();
+
+		return this.tiles[id].getHitbox();
 	}
 
 }

@@ -2,7 +2,6 @@ package com.jphardin;
 
 import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -11,26 +10,31 @@ import java.awt.event.MouseListener;
 public class MouseInput extends MouseAdapter implements MouseListener  {
 	
 	
-	static TileMap tileMapper = Main.tileMapper; // Links to tileMapper created in Main
+	TileMap tileMapper = Main.tileMapper; // Links to tileMapper created in Main
 	TileType tileSet = Main.tileSet; // Links to tileSet Created in Main
-	Main main = new Main(); // Links to main as an object (Still not sure if I should do this)
-	static boolean[] buttons = new boolean[5];
-	static int mouseX = 0;
-	static int mouseY = 0;
 	
-	public static void updateMouse() {
-		
+	boolean[] buttons = new boolean[5];
+	int mouseX = 0;
+	int mouseY = 0;
+	int currentButton = -1;
+	
+	public void updateMouse() {
+		UI ui = Main.ui;
+		FileManager fileManager = Main.fileManager;
 		boolean buttonPressed = false;
+		
 		// Checks if Mouse 1 is down and that the mouse is over the Close button
-		if(buttons[0] && FileManager.checkCloseHover(new Point(mouseX, mouseY))) {
-			FileManager.setShowFiles(false);
+		if(buttons[0] && fileManager.checkCloseHover(new Point(mouseX, mouseY))) {
+			fileManager.setShowFiles(false);
+			buttonPressed = true;
 		}
-		if(buttons[0] && UI.checkFileHover(new Point(mouseX,mouseY))) {
-			UI.setFileButtonState(1);
-			FileManager.setShowFiles(true);
+		if(buttons[0] && currentButton != -1) {
+			ui.setButtonState(currentButton, 1);
+			fileManager.setShowFiles(true);
+			buttonPressed = true;
 		}
 		else {
-			UI.setFileButtonState(0);
+		
 		}
 		// Checks to see if a map is loaded so there aren't null errors
 		if (Main.mapLoaded && !buttonPressed) {
@@ -45,40 +49,43 @@ public class MouseInput extends MouseAdapter implements MouseListener  {
 			}
 		}
 	}
-	
-	public void mousePressed(MouseEvent e) {
-		buttons[e.getButton() - 1] = true;
-		mouseX = e.getX();
-		mouseY = e.getY() - 27;
-		
-	}
-	public void mouseDragged(MouseEvent e){
-		mouseX = e.getX();
-		mouseY = e.getY() - 27;
-	}
-	public void mouseReleased(MouseEvent e) {
-		buttons[e.getButton() - 1] = false;
-	}
+	// Watches mouse movement to change Cursor to Hand Style when over a button
 	public void mouseMoved(MouseEvent e) {
-		
+		FileManager fileManager = Main.fileManager;
+		UI ui = Main.ui;
 		boolean hovering = false;
-		mouseX = e.getX();
-		mouseY = e.getY() - 27;
+		this.mouseX = e.getX();
+		this.mouseY = e.getY() - 27;
 		Point point = new Point(mouseX,mouseY);
+		int buttonCheck = ui.checkButtonHover(point);
 		
-		if( FileManager.checkCloseHover(point) ) {
+		if(fileManager.checkCloseHover(point) ) {
 			hovering = true;
 		}
 		
-		if ( UI.checkFileHover(point) ) {
+		if (buttonCheck != -1) {
 			hovering = true;
+			currentButton = buttonCheck;
 		}
 		if(hovering) {
 			Main.setCursor(Cursor.HAND_CURSOR);
 		}
 		else {
-			
+			currentButton = -1;
 			Main.setCursor(Cursor.DEFAULT_CURSOR);
 		}
+	}
+	public void mousePressed(MouseEvent e) {
+		this.buttons[e.getButton() - 1] = true;
+		this.mouseX = e.getX();
+		this.mouseY = e.getY() - 27;
+		
+	}
+	public void mouseDragged(MouseEvent e){
+		this.mouseX = e.getX();
+		this.mouseY = e.getY() - 27;
+	}
+	public void mouseReleased(MouseEvent e) {
+		this.buttons[e.getButton() - 1] = false;
 	}
 }

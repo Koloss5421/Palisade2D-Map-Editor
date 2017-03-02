@@ -33,14 +33,14 @@ public class Main extends JPanel {
 	static TileType tileSet = new TileType();
 	static UITileSet uiTileSet = new UITileSet();
 	static TileMap tileMapper;
+	static FileManager fileManager;
+	static UI ui;
+	static Main main;
 	
 	static int selector = 0;
 	
 	static int cursor = Cursor.DEFAULT_CURSOR;
 	
-	public Main() {
-		
-	}
 	
 	public static void main(String[] args) throws InterruptedException {
 		
@@ -49,16 +49,14 @@ public class Main extends JPanel {
 		
 		frame = new JFrame(title);
 		Main main = new Main();	
-		//Input input = new Input();
 		KeyListener keyListener = new KeyListener();
 		MouseInput mouseListener = new MouseInput();
-		FileManager fileManager = new FileManager();
+		
 		
 		frame.setSize(windowWidth, windowHeight);
 		frame.setMinimumSize(new Dimension(windowWidth, windowHeight));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		//frame.pack();
 		frame.add(main);
 		frame.setVisible(true);
 		frame.setResizable(false);
@@ -72,19 +70,18 @@ public class Main extends JPanel {
 		running = true;
 		
 		while(running) {
-			
+			fileManager = new FileManager();
+			ui = new UI();
 			frame.repaint();
-			KeyListener.updateInput();
-			MouseInput.updateMouse();
+			keyListener.updateInput();
+			mouseListener.updateMouse();
 			next_tick += SKIP_TICKS;
 			sleep_time = (int) (next_tick - System.currentTimeMillis());
 			
 			if (sleep_time >= 0) {
 				Thread.sleep(sleep_time);
 			}
-			//System.out.println("Memory usage: " + ( Runtime.getRuntime().freeMemory() / 1048576 ) + " Mb");
 		}
-		
 	}
 	//PaintMethod used with repaint()
 	public void paintComponent(Graphics g) {
@@ -95,16 +92,23 @@ public class Main extends JPanel {
 			tileMapper.drawMap(g2, tileSize, yOffset, xOffset);
 		}
 		else {
-			g2.setFont(new Font("Consolas", Font.BOLD, 20));
-			g2.setColor(Color.red);
-			g2.drawString("Map not loaded!", 10, windowHeight - 55);
-			g2.setFont(new Font("Consolas", Font.PLAIN, 20));
-			g2.setColor(Color.red);
-			g2.drawString("Use 'File' to load map.", 10, windowHeight - 35);
+			drawNoMap(g2);
 		}
-		UI.drawHud(g2);
-		FileManager.draw(g2);
 		
+		ui.drawHud(g2);
+		
+		if (FileManager.showFiles) {
+			fileManager.draw(g2);
+		}
+		System.gc();
+	}
+	private static void drawNoMap(Graphics2D g2) {
+		g2.setFont(new Font("Consolas", Font.BOLD, 20));
+		g2.setColor(Color.red);
+		g2.drawString("Map not loaded!", 10, windowHeight - 55);
+		g2.setFont(new Font("Consolas", Font.PLAIN, 20));
+		g2.setColor(Color.red);
+		g2.drawString("Use 'File' to load map.", 10, windowHeight - 35);
 	}
 	public static void setXOffset(int x) {
 		xOffset = x;

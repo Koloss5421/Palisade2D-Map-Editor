@@ -5,10 +5,10 @@ import java.awt.event.KeyEvent;
 
 public class KeyListener extends KeyAdapter {
 	
-	static boolean[] keys = new boolean[256];
-	public static int keyTimer = 0;
-	public static int delay = 5;
-	public static void updateInput() {
+	boolean[] keys = new boolean[256];
+	int keyTimer = 0;
+	int delay = 5;
+	public void updateInput() {
 		
 		TileType tileSet = Main.tileSet;
 		
@@ -68,10 +68,10 @@ public class KeyListener extends KeyAdapter {
 			Main.saveMap();
 		}
 		if(keys[KeyEvent.VK_C] && keyTimer >= delay) {
-			UI.setShowHitBoxes( !UI.getShowHitBoxes() );
+			Main.ui.setShowHitBoxes( !Main.ui.getShowHitBoxes() );
 		}
 		if(keys[KeyEvent.VK_G] && keyTimer >= delay) {
-			UI.setDrawGrid(!UI.getDrawGrid());
+			Main.ui.setDrawGrid(!Main.ui.getDrawGrid());
 		}
 		keyTimer++;
 	}
